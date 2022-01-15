@@ -22,7 +22,7 @@ struct Post {
     text: String,
 }
 
-#[post("/", data = "<post>")]
+#[post("/post", data = "<post>")]//use post to raise a new post
 async fn create(mut db: Connection<Db>, post: Json<Post>) -> Result<Created<Json<Post>>> {
     // There is no support for `RETURNING`.
     sqlx::query!("INSERT INTO posts (title, text) VALUES (?, ?)", post.title, post.text)
@@ -32,7 +32,7 @@ async fn create(mut db: Connection<Db>, post: Json<Post>) -> Result<Created<Json
     Ok(Created::new("/").body(post))
 }
 
-#[get("/")]
+#[get("/get")]// use get without id to show all
 async fn list(mut db: Connection<Db>) -> Result<Json<Vec<i64>>> {
     let ids = sqlx::query!("SELECT id FROM posts")
         .fetch(&mut *db)
@@ -43,7 +43,7 @@ async fn list(mut db: Connection<Db>) -> Result<Json<Vec<i64>>> {
     Ok(Json(ids))
 }
 
-#[get("/<id>")]
+#[get("/get/<id>")]// use get with id to show the data with entered id
 async fn read(mut db: Connection<Db>, id: i64) -> Option<Json<Post>> {
     sqlx::query!("SELECT id, title, text FROM posts WHERE id = ?", id)
         .fetch_one(&mut *db)
@@ -52,7 +52,7 @@ async fn read(mut db: Connection<Db>, id: i64) -> Option<Json<Post>> {
         .ok()
 }
 
-#[delete("/<id>")]
+#[delete("/delete/<id>")]// use delete to delete the data with entered id
 async fn delete(mut db: Connection<Db>, id: i64) -> Result<Option<()>> {
     let result = sqlx::query!("DELETE FROM posts WHERE id = ?", id)
         .execute(&mut *db)
@@ -61,7 +61,7 @@ async fn delete(mut db: Connection<Db>, id: i64) -> Result<Option<()>> {
     Ok((result.rows_affected() == 1).then(|| ()))
 }
 
-#[delete("/")]
+#[delete("/destroy")]// use destroy to empty the table
 async fn destroy(mut db: Connection<Db>) -> Result<()> {
     sqlx::query!("DELETE FROM posts").execute(&mut *db).await?;
 
