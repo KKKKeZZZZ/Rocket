@@ -13,7 +13,7 @@ struct Db(sqlx::SqlitePool);
 
 type Result<T, E = rocket::response::Debug<sqlx::Error>> = std::result::Result<T, E>;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, sqlx::FromRow)]
 #[serde(crate = "rocket::serde")]
 struct Post {// struct edited, viewedTimes added
     #[serde(skip_deserializing, skip_serializing_if = "Option::is_none")]
@@ -48,8 +48,7 @@ async fn list(mut db: Connection<Db>) -> Result<Json<Vec<i64>>> {
 
 #[get("/get/<id>")]// use get with id to show the data with entered id
 async fn read(mut db: Connection<Db>, id: i64) -> Option<Json<Post>> {
-    sqlx::query_as!(Post,
-         "SELECT id, title, text, viewedTimes FROM posts WHERE id = ?", id)//viewed times added
+    sqlx::query!("SELECT id, title, text, viewedTimes FROM posts WHERE id = ?", id)//viewed times added
         .fetch_one(&mut *db)
         .map_ok(|r| Json(Post { id: Some(r.id), title: r.title, text: r.text, viewedTimes: r.viewedTimes }))
         .await
