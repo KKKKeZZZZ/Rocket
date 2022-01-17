@@ -17,6 +17,7 @@ struct Post {
     id: Option<i64>,
     title: String,
     text: String,
+    viewedTimes: i64,//viewedTimes added
 }
 
 type Result<T, E = Debug<rusqlite::Error>> = std::result::Result<T, E>;
@@ -46,8 +47,8 @@ async fn list(db: Db) -> Result<Json<Vec<i64>>> {
 #[get("/<id>")]
 async fn read(db: Db, id: i64) -> Option<Json<Post>> {
     let post = db.run(move |conn| {
-        conn.query_row("SELECT id, title, text FROM posts WHERE id = ?1", params![id],
-            |r| Ok(Post { id: Some(r.get(0)?), title: r.get(1)?, text: r.get(2)? }))
+        conn.query_row("SELECT id, title, text, viewedTimes FROM posts WHERE id = ?1", params![id],
+            |r| Ok(Post { id: Some(r.get(0)?), title: r.get(1)?, text: r.get(2)?, viewedTimes: r.get(3)? }))//add viewedTimes
     }).await.ok()?;
 
     Some(Json(post))

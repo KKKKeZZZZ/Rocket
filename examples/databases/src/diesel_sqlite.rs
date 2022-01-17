@@ -22,6 +22,8 @@ struct Post {
     text: String,
     #[serde(skip_deserializing)]
     published: bool,
+    
+    viewedTimes: i32, // viewedTimes added
 }
 
 table! {
@@ -30,6 +32,7 @@ table! {
         title -> Text,
         text -> Text,
         published -> Bool,
+        viewedTimes -> Integer,
     }
 }
 
