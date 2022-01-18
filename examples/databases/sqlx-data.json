@@ -1,7 +1,7 @@
 {
   "db": "SQLite",
   "11e3096becb72f427c8d3911ef4327afd9516143806981e11f8e34d069c14472": {
-    "query": "SELECT id, title, text FROM posts WHERE id = ?",
+    "query": "SELECT id, title, text, viewedTimes FROM posts WHERE id = ?",
     "describe": {
       "columns": [
         {
@@ -37,7 +37,7 @@
     }
   },
   "3c289da9873097a11191dbedc5c78d86afd6a6d36771bfeb12f331abca6279cf": {
-    "query": "INSERT INTO posts (title, text) VALUES (?, ?)",
+    "query": "INSERT INTO posts (title, text, viewedTimes) VALUES (?, ?, ?)",
     "describe": {
       "columns": [],
       "parameters": {
